@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { eventBus } from '@/eventBus'
 
 export default {
 
@@ -33,7 +34,8 @@ export default {
       console.log('getData()')
       try {
         const response = await axios.get(`/api/contacts`)
-        return response.data
+        this.items = response.data.data
+        //return response.data
       } catch (error) {
         return []
       }
@@ -42,9 +44,12 @@ export default {
   },
 
   created() { 
-    this.getData().then( r => {
-      this.items = r.data
+    this.getData()
+
+    eventBus.$on('contact-created', () => {
+      this.getData()
     })
+
   },
 
   mounted() { },

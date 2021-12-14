@@ -7,6 +7,9 @@ Pre-Release
 Current Work
 * [ ] List a few 'test' countries with country code & abbreviation, in a fixed code array
 * [ ] Use table to correctly validate (input) & format (output) numbers
+* [ ] Phone Number validation (based on country?)
+  * client-side
+  * server-side
 * [ ] Pagination
 
 Known Issues
