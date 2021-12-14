@@ -20,6 +20,31 @@ class ContactsApiTest extends TestCase
      * @group contacts
      * @group contacts-api
      */
+    public function test_should_list_all_contacts()
+    {
+        $response = $this->get('/api/contacts');
+        $content = json_decode($response->content());
+        //dd($content);
+
+        $this->assertIsArray($content->data);
+        $this->assertGreaterThan(0, count($content->data));
+        $this->assertNotNull($content->data[0]);
+        $this->assertNotNull($content->data[0]->id);
+        $this->assertIsString($content->data[0]->firstname);
+
+        $this->assertNotNull($content->data[0]->phonenumbers);
+        $this->assertGreaterThan(0, count($content->data[0]->phonenumbers));
+        $this->assertNotNull($content->data[0]->phonenumbers[0]->phonenumber);
+        $this->assertIsString($content->data[0]->phonenumbers[0]->phonenumber);
+
+        $response->assertStatus(200);
+    }
+
+    /**
+     * @group api
+     * @group contacts
+     * @group contacts-api
+     */
     public function test_should_add_new_contact_name_with_phone_number()
     {
         $response = $this->post('/api/contacts');
@@ -82,8 +107,12 @@ class ContactsApiTest extends TestCase
     {
         parent::setUp();
 
-        $contact = Contact::factory()
+        $contact = Contact::factory(3)
             ->has(Phonenumber::factory()->count(1))
+            ->create();
+
+        $contact = Contact::factory(2)
+            ->has(Phonenumber::factory()->count(2))
             ->create();
     }
 
