@@ -11,6 +11,21 @@ class Contact extends EloquentModel
     protected $guarded = [ 'id', 'created_at', 'updated_at' ];
     protected $with = [ 'phonenumbers' ]; // eager-load by default
 
+    //-----------------------------------------------
+    // %%% Boot
+    //-----------------------------------------------
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($model) {
+            foreach ($model->phonenumbers as $m) {
+                $m->delete();
+            }
+        });
+    }
+
     //--------------------------------------------
     // %%% Relationships
     //--------------------------------------------
