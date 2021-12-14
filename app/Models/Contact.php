@@ -9,6 +9,7 @@ class Contact extends EloquentModel
     use HasFactory;
 
     protected $guarded = [ 'id', 'created_at', 'updated_at' ];
+    //protected $with = [ 'phonenumbers' ]; // eager-load by default
 
     //--------------------------------------------
     // %%% Relationships

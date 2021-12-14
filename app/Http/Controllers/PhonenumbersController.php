@@ -9,10 +9,11 @@ class PhonenumbersController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Phonenumber::get();
-        return new PhonenumberCollection($data);
+        $list = Phonenumber::get();
+        return new PhonenumberCollection($list);
     }
 
+    // Remove a phone number, but not the contact itself
     public function destroy(Phonenumber $phonenumber)
     {
         $phonenumber->delete();

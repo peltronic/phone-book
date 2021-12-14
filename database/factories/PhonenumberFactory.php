@@ -8,9 +8,8 @@ class PhonenumberFactory extends Factory
 {
     public function definition()
     {
-        $phone = $this->faker->e164PhoneNumber;
         return [
-            'phonenumber' => $phone,
+            'phonenumber' => $this->faker->e164PhoneNumber,
         ];
     }
 

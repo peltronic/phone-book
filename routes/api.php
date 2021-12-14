@@ -6,4 +6,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('phonenumbers', '\App\Http\Controllers\PhonenumbersController', []);
+Route::resource('contacts', '\App\Http\Controllers\ContactsController', [
+    'except' => [ 'create', 'edit', 'update' ],
+]);
+
+Route::resource('phonenumbers', '\App\Http\Controllers\PhonenumbersController', [
+    'except' => [ 'create', 'edit', 'update' ],
+]);

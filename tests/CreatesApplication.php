@@ -19,6 +19,13 @@ trait CreatesApplication
         return $app;
     }
 
+    public function ajaxJSON($method, $uri, array $data=[]) {
+        return $this->json($method,$uri,$data,[
+            'HTTP_X-Requested-With' => 'XMLHttpRequest',
+            //'Accept' => 'application/json',
+        ]);
+    }
+
     protected function setUp() : void
     {
         parent::setUp();
