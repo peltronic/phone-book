@@ -27,11 +27,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    //--------------------------------------------
-    // %%% Relationships
-    //--------------------------------------------
-
-    public function phonenumbers() {
-        return $this->hasMany(Phonenumber::class);
-    }
 }

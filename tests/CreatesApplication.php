@@ -1,5 +1,4 @@
 <?php
-
 namespace Tests;
 
 use Illuminate\Contracts\Console\Kernel;
@@ -18,5 +17,15 @@ trait CreatesApplication
         $app->make(Kernel::class)->bootstrap();
 
         return $app;
+    }
+
+    protected function setUp() : void
+    {
+        parent::setUp();
+    }
+
+    protected function tearDown() : void
+    {
+        parent::tearDown();
     }
 }

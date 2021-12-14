@@ -11,7 +11,6 @@ class UserFactory extends Factory
         $fn = $this->faker->firstName;
         $ln = $this->faker->lastName;
         $email = $fn.'.'.$ln.'@example.com';
-        $phone = $this->faker->e164PhoneNumber;
         return [
             'name' => $fn.' '.$ln,
             'email' => $email,

@@ -4,7 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 
-class Phonenumber extends EloquentModel
+class Contact extends EloquentModel
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class Phonenumber extends EloquentModel
     // %%% Relationships
     //--------------------------------------------
 
-    public function contact() {
-        return $this->belongsTo(Contact::class);
+    public function phonenumbers() {
+        return $this->hasMany(Phonenumber::class);
     }
 }
