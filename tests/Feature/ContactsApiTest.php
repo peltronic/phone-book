@@ -3,6 +3,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Str;
 
 use Tests\TestCase;
 
@@ -75,13 +76,7 @@ class ContactsApiTest extends TestCase
     public function test_should_delete_contact()
     {
         // Retrieve a contact to delete
-        $response = $this->ajaxJSON('GET', route('contacts.index'));
-        $response->assertStatus(200);
-        $content = json_decode($response->content());
-
-        $this->assertNotNull($content->data[0]->id??null);
-        $contactToDelete = Contact::find($content->data[0]->id);
-        $this->assertNotNull($contactToDelete->id??null);
+        $contactToDelete = Contact::has('phonenumbers')->first();
         $this->assertGreaterThan(0, $contactToDelete->phonenumbers->count());
 
         $response = $this->ajaxJSON('DELETE', route('contacts.destroy', $contactToDelete->id) );
@@ -104,11 +99,19 @@ class ContactsApiTest extends TestCase
      */
     public function test_should_lookup_contact_by_name()
     {
-        //$response = $this->get('/api/contacts?by=name&q=');
-        $params = [
-            'by' => 'name',
-            'q' => '',
-        ];
+        $contactToQuery = Contact::has('phonenumbers')->first();
+
+        // --- By first name ---
+
+        $qStr = Str::of($contactToQuery->firstname)->substr(0, 2);
+        $params = [ 'by' => 'name', 'q' => $qStr ];
+        $response = $this->ajaxJSON('GET', route('contacts.index', $params));
+        $response->assertStatus(200);
+
+        // --- By last name ---
+
+        $qStr = Str::of($contactToQuery->lastname)->substr(0, 2);
+        $params = [ 'by' => 'name', 'q' => $qStr ];
         $response = $this->ajaxJSON('GET', route('contacts.index', $params));
         $response->assertStatus(200);
     }
@@ -120,10 +123,20 @@ class ContactsApiTest extends TestCase
      */
     public function test_should_lookup_contact_by_phone_number()
     {
-        $params = [
-            'by' => 'number',
-            'q' => '',
-        ];
+        $contactToQuery = Contact::has('phonenumbers')->first();
+        $this->assertGreaterThan(0, $contactToQuery->phonenumbers->count());
+
+        // --- From first digit ---
+
+        $qStr = Str::of($contactToQuery->phonenumbers[0]->phonenumber)->substr(0, 2);
+        $params = [ 'by' => 'number', 'q' => $qStr ];
+        $response = $this->ajaxJSON('GET', route('contacts.index', $params));
+        $response->assertStatus(200);
+
+        // --- From mid-digit ---
+
+        $qStr = Str::of($contactToQuery->phonenumbers[0]->phonenumber)->substr(3, 3);
+        $params = [ 'by' => 'number', 'q' => $qStr ];
         $response = $this->ajaxJSON('GET', route('contacts.index', $params));
         $response->assertStatus(200);
     }

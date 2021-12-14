@@ -8,7 +8,6 @@
 
 <script>
 
-//import Hello from '@components/Hello'
 import { eventBus } from '@/eventBus'
 import ListContacts from '@components/Contacts/List'
 import CreateContactForm from '@components/Contacts/CreateForm'
@@ -16,7 +15,6 @@ import CreateContactForm from '@components/Contacts/CreateForm'
 export default {
   name: 'App',
   components: {
-    //Hello,
     ListContacts,
     CreateContactForm,
   },
