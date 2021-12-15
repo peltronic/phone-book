@@ -3,12 +3,16 @@ by Peter S Gorgone
 
 Download & Install:
 1. $ git clone git@github.com:peltronic/phone-book.git
-2. $ touch database/database.sqlite
-3. $ composer install
-4. $ npm install
-5. $ php artisan test --group=regression
-6. $ php artisan migrate
-7. $ php artisan db:seed
+2. $ cd phone-book
+3. $ mkdir -p storage/framework/{sessions,views,cache}; chmod -R 777 storage bootstrap/cache
+4. $ touch database/database.sqlite
+5. $ composer install
+6. $ cp dot-env.txt .env
+8. $ php artisan test --group=regression
+7. $ npm install
+9. $ php artisan migrate
+10. $ php artisan db:seed
+11. $ sh ./run-hot.sh
 
 Notes:
 * Current 'demo' implemenation only supports 'guest' access...that is there is no registration or login.
