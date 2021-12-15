@@ -8,7 +8,13 @@
 
     <!-- ++++++++++++ -->
 
-    <b-table striped small sort-icon-left :items="items" :fields="fields">
+    <b-table striped small sort-icon-left 
+      id="contacts-table"
+      :items="items" 
+      :fields="fields" 
+      :per-page="perPage"
+      :current-page="currentPage"
+    >
 
       <template #cell(name)="data">
         <div class="">
@@ -23,6 +29,8 @@
       </template>
 
     </b-table>
+
+    <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="contacts-table"></b-pagination>
 
     <!-- ++++++++++++ -->
 
@@ -70,13 +78,19 @@ export default {
       ]
     },
 
+    rows() { // row count for pagination
+      return this.items.length
+    }
   },
 
   data: () => ({
-    items: null, // table data items (rows)
+    items: [], // table data items (rows)
     qStr: '', // query string for table search
     isModalVisible: false,
     selectedId: null, // the contact id (primary) of the selected row, if any
+
+    perPage: 10,
+    currentPage: 1,
   }),
 
   methods: {

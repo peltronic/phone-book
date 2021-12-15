@@ -18,11 +18,11 @@ class DatabaseSeeder extends Seeder
         Phonenumber::truncate();
         Contact::truncate();
 
-        Contact::factory(7)
+        Contact::factory(11)
             ->has(Phonenumber::factory()->count(1))
             ->create();
 
-        Contact::factory(3)
+        Contact::factory(5)
             ->has(Phonenumber::factory()->count(2))
             ->create();
 
