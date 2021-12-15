@@ -12,24 +12,20 @@ class Phonenumber extends EloquentModel
     protected $appends = [ 'formatted' ];
 
     public static $countries = [ 
-        'US' => [
+        'us' => [
             'country_code' => 1,
-            //'length' => 1+10,
             'mask' => '+1 ###-###-####',
         ],
-        'JP' => [ 
+        'jp' => [ 
             'country_code' => 81,
-            //'length' => 2+10,
             'mask' => '+03 ##-####-####', // for 2-digit area codes
         ],
-        //'JP2' => [ // %TODO
+        //'jp2' => [ // %TODO
             //'country_code' => 81,
-            //'length' => 10,
             //'mask' => null,
         //],
-        'UK' => [
+        'uk' => [
             'country_code' => 44,
-            //'length' => 2+11,
             'mask' => '+44 ###-####-####',
         ],
     ];
@@ -45,6 +41,9 @@ class Phonenumber extends EloquentModel
 
         static::creating(function ($model) {
             $model->phonenumber = preg_replace('/\D/', '', $model->phonenumber); // store only digits
+            if ($model->country) {
+                $model->country = strtolower($model->country); // store lowercase
+            }
         });
     }
 

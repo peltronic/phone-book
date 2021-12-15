@@ -94,11 +94,8 @@ export default {
 
     async doDelete() {
       try {
-        console.log('mark.1')
         const response = await axios.delete(`/api/contacts/${this.selectedId}`)
-        console.log('mark.2')
         this.hideModal()
-        console.log('mark.3')
         await this.getData() // update table
       } catch (err) {
         // %TODO: display feedback to user if error
@@ -109,7 +106,7 @@ export default {
     // Format how we display the form field (individual numbers)
     formatPhone(obj) {
       if ( obj.country && obj.country !== '' ) {
-        return `${obj['formatted']} (${obj.country})`
+        return `${obj['formatted']} (${obj.country.toUpperCase()})`
       }
       return `${obj['formatted']}`
     },
