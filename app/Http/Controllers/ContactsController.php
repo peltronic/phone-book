@@ -14,7 +14,6 @@ class ContactsController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            //'by' => 'string|in:name,number', // search by contact name and/or phone number
             'q' => 'string', // value to search for
         ]);
 
@@ -29,24 +28,9 @@ class ContactsController extends Controller
             $query->orWhere( function($q1) use($qStr) {
                 $q1->where('firstname', 'LIKE', $qStr.'%')->orWhere('lastname', 'LIKE', $qStr.'%');
             });
-            /*
-            switch ( $request->by ) {
-                case 'name':
-                    //$query->where('firstname', 'LIKE', $qStr.'%');
-                    $query->where('firstname', 'LIKE', $qStr.'%')->orWhere('lastname', 'LIKE', $qStr.'%');
-                    break;
-                case 'number':
-                    $query->whereHas('phonenumbers', function($q1) use($qStr) {
-                        //$q1->where('phonenumber', 'LIKE', $qStr.'%');
-                        $q1->where('phonenumber', 'LIKE', '%'.$qStr.'%');
-                    });
-                    break;
-            }
-            */
         }
 
         $list = $query->orderBy('created_at', 'desc')->get();
-        //dd('controller', $list->toArray(), $qStr);
 
         return new ContactCollection($list);
     }

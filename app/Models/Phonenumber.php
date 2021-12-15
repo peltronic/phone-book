@@ -9,20 +9,28 @@ class Phonenumber extends EloquentModel
     use HasFactory;
 
     protected $guarded = [ 'id', 'created_at', 'updated_at' ];
-    //protected $appends = [ 'phonedigits' ];
+    protected $appends = [ 'formatted' ];
 
     public static $countries = [ 
         'US' => [
             'country_code' => 1,
-            'mask' => '###-###-####',
+            //'length' => 1+10,
+            'mask' => '+1 ###-###-####',
         ],
-        'JP' => [
+        'JP' => [ 
             'country_code' => 81,
-            'mask' => null,
+            //'length' => 2+10,
+            'mask' => '+03 ##-####-####', // for 2-digit area codes
         ],
+        //'JP2' => [ // %TODO
+            //'country_code' => 81,
+            //'length' => 10,
+            //'mask' => null,
+        //],
         'UK' => [
             'country_code' => 44,
-            'mask' => null,
+            //'length' => 2+11,
+            'mask' => '+44 ###-####-####',
         ],
     ];
 
@@ -46,8 +54,26 @@ class Phonenumber extends EloquentModel
 
     // returns formatted number based on country code
     public function getFormattedAttribute($value) {
-        return $this->phonenumber; // %TODO
-        //return preg_replace('/\D/', '', $this->phonenumber);
+        $mask = Phonenumber::$countries[$this->country]['mask'] ?? null;
+        if ( !$mask ) {
+            return $this->phonenumber;
+        }
+
+        $pnA = str_split($this->phonenumber);
+        $maskA = str_split($mask);
+
+        // Format the number using the given mask
+        // %TODO: make robust in case lenght of mask and number don't match
+        $formatted = collect($maskA)->map( function($c) use($pnA) {
+            static $idx = 0;
+            if ($c === '#') { 
+                return $pnA[$idx++];
+            } else {
+               return $c;
+            }
+        });
+
+        return implode('', $formatted->toArray());
     }
 
     //--------------------------------------------

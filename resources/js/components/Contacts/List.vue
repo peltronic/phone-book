@@ -40,8 +40,7 @@ export default {
     fields() {
       return [
         { key: 'name', label: 'Name',  sortable: true, tdClass: 'align-middle' },
-        { key: 'phonenumbers', label: 'Phone',  formatter: v => this.toCsv(v.map(o => o['phonenumber'])), sortable: false, tdClass: 'align-middle' },
-        //{ key: 'country', label: 'Country',  sortable: true, tdClass: 'align-middle' },
+        { key: 'phonenumbers', label: 'Phone',  formatter: v => this.toCsv( v.map( o => `${this.formatPhone(o)}` ) ), sortable: false, tdClass: 'align-middle' },
         { key: 'created_at', label: 'Date Added', formatter: v => DateTime.fromISO(v).toFormat('MMMM dd, yyyy'), sortable: true, tdClass: 'align-middle' },
 
         //{ key: 'formctrl', label: '', tdClass: 'align-middle' },
@@ -68,6 +67,15 @@ export default {
       } catch (error) {
         return []
       }
+    },
+
+    formatPhone(obj) {
+      if ( obj.country && obj.country !== '' ) {
+        //return `${obj['phonenumber']} (${obj.country})`
+        return `${obj['formatted']} (${obj.country})`
+      }
+      //return `${obj['phonenumber']}`
+      return `${obj['formatted']}`
     },
 
     toCsv(arrayIn) {

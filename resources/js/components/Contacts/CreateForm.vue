@@ -92,7 +92,7 @@ export default {
       phonenumber: '',
     },
     verrors: {}, // validation errors
-    isFormVisible: true,
+    isFormVisible: false,
   }),
 
   methods: {
