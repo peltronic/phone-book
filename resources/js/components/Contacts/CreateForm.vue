@@ -59,10 +59,6 @@
 
             </div>
 
-            <!-- 
-            v-mask="'(###) ###-####'"
-            @keydown.native="filterPhonenumber"  
-            -->
             <div id="verr-phonenumber" class="invalid-feedback">{{ hasVerr('phonenumber') }}</div>
           </b-col>
         </b-row>
@@ -119,7 +115,6 @@ export default {
 
     selectedCountry() {
       const isCountryCode = this.form.phonenumber.match(/^(\+?\d{1,3}|\d{1,4})/g)
-      //console.log('selectedCountry', { phone: this.form.phonenumber, isCountryCode, })
       if (!isCountryCode) {
         return null
       }
@@ -136,10 +131,6 @@ export default {
     },
 
     selectedMask() {
-      //const isFirstCharPlus = this.form.phonenumber.match(/^(\+)/g)
-      //if ( !this.selectedCountry ) {
-      //return '?[+]################################' // raw numbers, longer than any possible intl phone number
-      //}
       switch (this.selectedCountry) {
         case 'us':
           return '+# (###) ###-####'
@@ -149,7 +140,6 @@ export default {
           return '+## ##-####-####'
         default:
           return '?C#####################################' // raw numbers, longer than any possible intl phone number
-          //return null
       }
     },
 
@@ -162,7 +152,7 @@ export default {
       phonenumber: '',
     },
     verrors: {}, // validation errors
-    isFormVisible: true, // false,
+    isFormVisible: false,
     tooltips: {
       phone: 'Enter phone number with optional country code prefixed with +',
     },
