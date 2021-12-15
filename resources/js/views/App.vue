@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="container">
 
-    <h1>Hello World App!</h1>
+    <h1 class="mt-3 mb-5">Phone Book Demo App by PSG</h1>
 
     <CreateContactForm class="OFF-mb-5" />
 

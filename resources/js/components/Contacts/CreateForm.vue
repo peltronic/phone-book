@@ -1,11 +1,11 @@
 <template>
-  <div v-if="!isLoading" class="container create-form contacts">
+  <div v-if="!isLoading" class="create-form contacts">
 
     <section v-if="isFormVisible">
       <div class="d-flex justify-content-between align-items-center">
         <h4>Contact Create Form</h4>
 
-        <div class="h1" @click="hideForm()">
+        <div class="h1 clickable m-0" @click="hideForm()">
           <b-icon icon="x"></b-icon>
         </div>
       </div>
@@ -176,4 +176,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.clickable {
+  cursor: pointer;
+}
 </style>
