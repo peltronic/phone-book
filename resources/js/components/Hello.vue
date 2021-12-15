@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!isLoading" class="container-xl" id="view-show_timeline">
+  <div v-if="!isLoading" class="container" id="view-show_timeline">
 
     <h4>Hello Component</h4>
 

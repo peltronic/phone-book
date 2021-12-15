@@ -1,18 +1,26 @@
 <template>
   <div>
+
     <h1>Hello World App!</h1>
-    <Hello />
+
+    <CreateContactForm class="OFF-mb-5" />
+
+    <ListContacts />
+
   </div>
 </template>
 
 <script>
 
-import Hello from '@components/Hello'
+import { eventBus } from '@/eventBus'
+import ListContacts from '@components/Contacts/List'
+import CreateContactForm from '@components/Contacts/CreateForm'
 
 export default {
   name: 'App',
   components: {
-    Hello,
+    ListContacts,
+    CreateContactForm,
   },
 
 }

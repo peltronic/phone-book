@@ -13,7 +13,25 @@ class ContactsController extends Controller
 {
     public function index(Request $request)
     {
-        $list = Contact::get();
+        $request->validate([
+            'q' => 'string', // value to search for
+        ]);
+
+        $query = Contact::query();
+
+        // %FIXME: move to scope
+        if ( $request->has('q') && $request->q!=='' ) {
+            $qStr = $request->q;
+            $query->whereHas('phonenumbers', function($q1) use($qStr) {
+                $q1->where('phonenumber', 'LIKE', '%'.$qStr.'%');
+            });
+            $query->orWhere( function($q1) use($qStr) {
+                $q1->where('firstname', 'LIKE', $qStr.'%')->orWhere('lastname', 'LIKE', $qStr.'%');
+            });
+        }
+
+        $list = $query->orderBy('created_at', 'desc')->get();
+
         return new ContactCollection($list);
     }
 
@@ -24,14 +42,15 @@ class ContactsController extends Controller
             'lastname' => 'string',
             'phonenumber' => 'required|string',
         ]);
+
         $contact = Contact::create( $request->only(['firstname','lastname']) );
         $contact->phonenumbers()->create([
             'phonenumber' => $request->phonenumber,
         ]);
+
         $contact->load('phonenumbers');
         $contact->refresh();
-//dd($contact);
-//dd($contact->phonenumbers);
+
         return new ContactResource($contact);
     }
 

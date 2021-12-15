@@ -25,13 +25,8 @@ class PhonenumbersApiTest extends TestCase
         $response->assertStatus(200);
     }
 
-    protected function setUp() : void
-    {
+    protected function setUp() : void {
         parent::setUp();
-
-        $contact = User::factory()
-            ->has(Phonenumber::factory()->count(1))
-            ->create();
     }
 
     protected function tearDown() : void {
