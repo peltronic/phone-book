@@ -51,15 +51,13 @@ class Phonenumber extends EloquentModel
     // %%% Accessors & Mutators
     //--------------------------------------------
 
-    // returns formatted number based on country code
+    // Returns formatted number based on country code
     public function getFormattedAttribute($value) {
-        //return 'foo';
         $mask = Phonenumber::$countries[$this->country]['mask'] ?? null;
         if ( !$mask ) {
             return $this->phonenumber; // default to raw phone number
         }
 
-//dd($this->country, $mask);
         $pnA = str_split($this->phonenumber);
         $maskA = str_split($mask);
 

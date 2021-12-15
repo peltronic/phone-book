@@ -19,10 +19,8 @@ class PhonenumberFactory extends Factory
         if ( $country ) {
             $mask = Phonenumber::$countries[$country]['mask'];
             $countryCode = Phonenumber::$countries[$country]['country_code'];
-            //$len = substr_count( $mask, '#'); // digits only, also does not include country code
             $len = substr_count( $mask, '#'); // digits only, does include country code
             $ccLen = strlen((string)$countryCode); // assumes no country calling codes start with '0'
-            //dd($len);
             $data['phonenumber'] = $countryCode.$this->randomNumber($len-$ccLen);
             $data['country'] = $country;
         } else {

@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
         Phonenumber::truncate();
         Contact::truncate();
 
-        // \App\Models\User::factory(10)->create();
         Contact::factory(7)
             ->has(Phonenumber::factory()->count(1))
             ->create();
