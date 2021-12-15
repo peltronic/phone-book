@@ -1,11 +1,11 @@
 <template>
-  <div v-if="!isLoading" class="container create-form contacts">
+  <div v-if="!isLoading" class="create-form contacts">
 
     <section v-if="isFormVisible">
       <div class="d-flex justify-content-between align-items-center">
         <h4>Contact Create Form</h4>
 
-        <div class="h1" @click="hideForm()">
+        <div class="h1 clickable m-0" @click="hideForm()">
           <b-icon icon="x"></b-icon>
         </div>
       </div>
@@ -34,16 +34,35 @@
 
         <b-row class="mt-3">
           <b-col sm="6">
-            <label for="phonenumber" class="form-label">Phone*</label>
-            <b-form-input 
-              v-model="form.phonenumber" 
-              @focus="clearVerr('phonenumber')" 
-              @keydown.native="filterPhonenumber" 
-              id="phonenumber" 
-              :class="{ 'is-invalid' : hasVerr('phonenumber') }" 
-              aria-describedby="verr-phonenumber" 
-              placeholder="Enter phone number" 
-            ></b-form-input>
+
+            <div class="d-flex">
+              <label for="phonenumber" class="form-label">Phone*</label>
+              <div v-b-tooltip.hover="{ variant: 'info' }" :title="tooltips.phone" class="my-0 ms-1">
+                <b-icon icon="info-circle-fill" variant="info"></b-icon>
+              </div>
+            </div>
+
+            <div class="d-flex">
+              <b-form-input 
+                v-model="form.phonenumber" 
+                v-mask="selectedMask"
+                @focus="clearVerr('phonenumber')" 
+                id="phonenumber" 
+                :class="{ 'is-invalid' : hasVerr('phonenumber') }" 
+                aria-describedby="verr-phonenumber" 
+                placeholder="Enter phone number" 
+              ></b-form-input>
+
+              <div class="ms-3">
+                <country-flag v-if="selectedFlag" :country="selectedFlag" :shadow="true" size="normal"  />
+              </div>
+
+            </div>
+
+            <!-- 
+            v-mask="'(###) ###-####'"
+            @keydown.native="filterPhonenumber"  
+            -->
             <div id="verr-phonenumber" class="invalid-feedback">{{ hasVerr('phonenumber') }}</div>
           </b-col>
         </b-row>
@@ -54,6 +73,11 @@
         </div>
 
       </b-form>
+
+      <!--
+      <h1>Test: {{ selectedCountry }} | {{ selectedMask }}</h1>
+      -->
+
     </section>
 
     <section v-else>
@@ -72,15 +96,61 @@ import { eventBus } from '@/eventBus'
 
 export default {
 
-  props: {
-    //slug: null,
-  },
+  props: { },
 
   computed: {
 
     isLoading() {
-      return false
-      //return !this.slug
+      return false // Add any data dependencies on which rendering the template should wait
+    },
+
+    selectedFlag() {
+      if ( !this.selectedCountry ) {
+        return null
+      }
+      // Override cases where country-flag plugin uses a different code
+      switch (this.selectedCountry) {
+        case 'uk':
+          return 'gb'
+        default:
+          return this.selectedCountry
+      }
+    },
+
+    selectedCountry() {
+      const isCountryCode = this.form.phonenumber.match(/^(\+?\d{1,3}|\d{1,4})/g)
+      //console.log('selectedCountry', { phone: this.form.phonenumber, isCountryCode, })
+      if (!isCountryCode) {
+        return null
+      }
+      switch (isCountryCode[0]) {
+        case '+1':
+          return 'us'
+        case '+44':
+          return 'uk'
+        case '+81':
+          return 'jp'
+        default:
+          return null
+      }
+    },
+
+    selectedMask() {
+      //const isFirstCharPlus = this.form.phonenumber.match(/^(\+)/g)
+      //if ( !this.selectedCountry ) {
+      //return '?[+]################################' // raw numbers, longer than any possible intl phone number
+      //}
+      switch (this.selectedCountry) {
+        case 'us':
+          return '+# (###) ###-####'
+        case 'uk':
+          return '+## ###-####-####'
+        case 'jp':
+          return '+## ##-####-####'
+        default:
+          return '?C#####################################' // raw numbers, longer than any possible intl phone number
+          //return null
+      }
     },
 
   },
@@ -92,7 +162,10 @@ export default {
       phonenumber: '',
     },
     verrors: {}, // validation errors
-    isFormVisible: false,
+    isFormVisible: true, // false,
+    tooltips: {
+      phone: 'Enter phone number with optional country code prefixed with +',
+    },
   }),
 
   methods: {
@@ -119,8 +192,17 @@ export default {
     },
 
     clearVerr(field) {
-      console.log(`clearVerr ${field}`)
       Vue.delete(this.verrors, field)
+    },
+
+    async storeContact() {
+      const payload = {...this.form}
+      if ( this.selectedCountry ) {
+        payload.country = this.selectedCountry
+      }
+      //console.log('storeContact', { selectedCountry: this.selectedCountry, payload, })
+      const response = await axios.post(`/api/contacts`, payload)
+      return response
     },
 
     async onSubmit(e) {
@@ -159,11 +241,6 @@ export default {
       this.form.phonenumber = ''
     },
 
-    async storeContact() {
-      const payload = this.form
-      const response = await axios.post(`/api/contacts`, payload)
-      return response
-    },
   },
 
   created() { },
@@ -173,7 +250,11 @@ export default {
 
   //name: 'ContactsCreateForm',
 }
+
 </script>
 
 <style lang="scss" scoped>
+.clickable {
+  cursor: pointer;
+}
 </style>

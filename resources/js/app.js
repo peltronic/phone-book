@@ -14,6 +14,20 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 import router from './routes';
 
+import VueMask from 'v-mask'
+Vue.use(VueMask, {
+  placeholders: {
+    //'#': null,       // passing `null` removes default placeholder, so `#` is treated as character
+    //D: /\d/,
+    C: /\+/, 
+    //Я: /[\wа-яА-Я]/, // cyrillic letter as a placeholder
+  }
+});
+
+import CountryFlag from 'vue-country-flag'
+Vue.use(CountryFlag)
+//Vue.component('country-flag', CountryFlag)
+
 import App from './views/App.vue';
 
 const app = new Vue({

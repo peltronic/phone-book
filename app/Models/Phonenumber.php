@@ -12,25 +12,21 @@ class Phonenumber extends EloquentModel
     protected $appends = [ 'formatted' ];
 
     public static $countries = [ 
-        'US' => [
+        'us' => [
             'country_code' => 1,
-            //'length' => 1+10,
-            'mask' => '+1 ###-###-####',
+            'mask' => '+# ###-###-####',
         ],
-        'JP' => [ 
+        'jp' => [ 
             'country_code' => 81,
-            //'length' => 2+10,
-            'mask' => '+03 ##-####-####', // for 2-digit area codes
+            'mask' => '+## ##-####-####', // for 2-digit area codes
         ],
-        //'JP2' => [ // %TODO
+        //'jp2' => [ // %TODO
             //'country_code' => 81,
-            //'length' => 10,
             //'mask' => null,
         //],
-        'UK' => [
+        'uk' => [
             'country_code' => 44,
-            //'length' => 2+11,
-            'mask' => '+44 ###-####-####',
+            'mask' => '+## ###-####-####',
         ],
     ];
 
@@ -45,6 +41,9 @@ class Phonenumber extends EloquentModel
 
         static::creating(function ($model) {
             $model->phonenumber = preg_replace('/\D/', '', $model->phonenumber); // store only digits
+            if ($model->country) {
+                $model->country = strtolower($model->country); // store lowercase
+            }
         });
     }
 
@@ -54,13 +53,20 @@ class Phonenumber extends EloquentModel
 
     // returns formatted number based on country code
     public function getFormattedAttribute($value) {
+        //return 'foo';
         $mask = Phonenumber::$countries[$this->country]['mask'] ?? null;
         if ( !$mask ) {
-            return $this->phonenumber;
+            return $this->phonenumber; // default to raw phone number
         }
 
+//dd($this->country, $mask);
         $pnA = str_split($this->phonenumber);
         $maskA = str_split($mask);
+
+        if ( count($pnA) !== substr_count( $mask, '#') ) {
+            // mask does not match the number, default to raw phone number
+            return $this->phonenumber;
+        }
 
         // Format the number using the given mask
         // %TODO: make robust in case lenght of mask and number don't match
