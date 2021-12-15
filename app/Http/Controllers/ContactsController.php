@@ -39,7 +39,7 @@ class ContactsController extends Controller
     {
         $request->validate([
             'firstname' => 'required|string',
-            'lastname' => 'string',
+            'lastname' => 'string|nullable',
             'phonenumber' => 'required|string',
             'country' => 'string|in:us,uk,jp',
         ]);

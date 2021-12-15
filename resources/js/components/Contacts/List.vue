@@ -12,7 +12,7 @@
 
       <template #cell(name)="data">
         <div class="">
-          {{ `${data.item.firstname} ${data.item.lastname}` }}
+          {{ `${data.item.firstname} ${data.item.lastname||''}` }}
         </div>
       </template>
 

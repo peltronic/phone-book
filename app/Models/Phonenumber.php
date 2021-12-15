@@ -14,11 +14,11 @@ class Phonenumber extends EloquentModel
     public static $countries = [ 
         'us' => [
             'country_code' => 1,
-            'mask' => '+1 ###-###-####',
+            'mask' => '+# ###-###-####',
         ],
         'jp' => [ 
             'country_code' => 81,
-            'mask' => '+03 ##-####-####', // for 2-digit area codes
+            'mask' => '+## ##-####-####', // for 2-digit area codes
         ],
         //'jp2' => [ // %TODO
             //'country_code' => 81,
@@ -26,7 +26,7 @@ class Phonenumber extends EloquentModel
         //],
         'uk' => [
             'country_code' => 44,
-            'mask' => '+44 ###-####-####',
+            'mask' => '+## ###-####-####',
         ],
     ];
 
@@ -53,13 +53,20 @@ class Phonenumber extends EloquentModel
 
     // returns formatted number based on country code
     public function getFormattedAttribute($value) {
+        //return 'foo';
         $mask = Phonenumber::$countries[$this->country]['mask'] ?? null;
         if ( !$mask ) {
-            return $this->phonenumber;
+            return $this->phonenumber; // default to raw phone number
         }
 
+//dd($this->country, $mask);
         $pnA = str_split($this->phonenumber);
         $maskA = str_split($mask);
+
+        if ( count($pnA) !== substr_count( $mask, '#') ) {
+            // mask does not match the number, default to raw phone number
+            return $this->phonenumber;
+        }
 
         // Format the number using the given mask
         // %TODO: make robust in case lenght of mask and number don't match

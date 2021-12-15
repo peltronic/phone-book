@@ -35,7 +35,12 @@
         <b-row class="mt-3">
           <b-col sm="6">
 
-            <label for="phonenumber" class="form-label">Phone*</label>
+            <div class="d-flex">
+              <label for="phonenumber" class="form-label">Phone*</label>
+              <div v-b-tooltip.hover="{ variant: 'info' }" :title="tooltips.phone" class="my-0 ms-1">
+                <b-icon icon="info-circle-fill" variant="info"></b-icon>
+              </div>
+            </div>
 
             <div class="d-flex">
               <b-form-input 
@@ -113,23 +118,28 @@ export default {
     },
 
     selectedCountry() {
-      const match = this.form.phonenumber.match(/^(\+?\d{1,3}|\d{1,4})/g)
-      //console.log('selectedCountry', { phone: this.form.phonenumber, match, })
-      if (match) {
-        switch (match[0]) {
-          case '+1':
-            return 'us'
-          case '+44':
-            return 'uk'
-          case '+03':
-            return 'jp'
-          default:
-            return null
-        }
+      const isCountryCode = this.form.phonenumber.match(/^(\+?\d{1,3}|\d{1,4})/g)
+      //console.log('selectedCountry', { phone: this.form.phonenumber, isCountryCode, })
+      if (!isCountryCode) {
+        return null
+      }
+      switch (isCountryCode[0]) {
+        case '+1':
+          return 'us'
+        case '+44':
+          return 'uk'
+        case '+81':
+          return 'jp'
+        default:
+          return null
       }
     },
 
     selectedMask() {
+      //const isFirstCharPlus = this.form.phonenumber.match(/^(\+)/g)
+      //if ( !this.selectedCountry ) {
+      //return '?[+]################################' // raw numbers, longer than any possible intl phone number
+      //}
       switch (this.selectedCountry) {
         case 'us':
           return '+# (###) ###-####'
@@ -137,6 +147,9 @@ export default {
           return '+## ###-####-####'
         case 'jp':
           return '+## ##-####-####'
+        default:
+          return '?C#####################################' // raw numbers, longer than any possible intl phone number
+          //return null
       }
     },
 
@@ -150,6 +163,9 @@ export default {
     },
     verrors: {}, // validation errors
     isFormVisible: true, // false,
+    tooltips: {
+      phone: 'Enter phone number with optional country code prefixed with +',
+    },
   }),
 
   methods: {
@@ -176,8 +192,17 @@ export default {
     },
 
     clearVerr(field) {
-      console.log(`clearVerr ${field}`)
       Vue.delete(this.verrors, field)
+    },
+
+    async storeContact() {
+      const payload = {...this.form}
+      if ( this.selectedCountry ) {
+        payload.country = this.selectedCountry
+      }
+      //console.log('storeContact', { selectedCountry: this.selectedCountry, payload, })
+      const response = await axios.post(`/api/contacts`, payload)
+      return response
     },
 
     async onSubmit(e) {
@@ -216,14 +241,6 @@ export default {
       this.form.phonenumber = ''
     },
 
-    async storeContact() {
-      const payload = this.form
-      if ( this.selectedCountry ) {
-        payload.country = this.selectedCountry
-      }
-      const response = await axios.post(`/api/contacts`, payload)
-      return response
-    },
   },
 
   created() { },
@@ -233,6 +250,7 @@ export default {
 
   //name: 'ContactsCreateForm',
 }
+
 </script>
 
 <style lang="scss" scoped>
