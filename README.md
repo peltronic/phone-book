@@ -2,13 +2,13 @@ Demo Phone Book App
 by Peter S Gorgone
 
 Download & Install:
-# $ git clone git@github.com:peltronic/phone-book.git
-# $ touch database/database.sqlite
-# $ composer install
-# $ npm install
-# $ php artisan test --group=regression
-# $ php artisan migrate
-# $ php artisan db:seed
+1. $ git clone git@github.com:peltronic/phone-book.git
+2. $ touch database/database.sqlite
+3. $ composer install
+4. $ npm install
+5. $ php artisan test --group=regression
+6. $ php artisan migrate
+7. $ php artisan db:seed
 
 Notes:
 * Current 'demo' implemenation only supports 'guest' access...that is there is no registration or login.
