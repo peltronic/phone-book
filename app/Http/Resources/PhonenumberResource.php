@@ -7,6 +7,7 @@ class PhonenumberResource extends JsonResource
 {
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $base = parent::toArray($request);
+        return $base;
     }
 }

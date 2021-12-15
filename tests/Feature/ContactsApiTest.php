@@ -16,7 +16,6 @@ class ContactsApiTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     /**
-     * @group here1213
      * @group regression
      * @group api
      * @group contacts
@@ -38,6 +37,9 @@ class ContactsApiTest extends TestCase
         $this->assertGreaterThan(0, count($content->data[0]->phonenumbers));
         $this->assertNotNull($content->data[0]->phonenumbers[0]->phonenumber);
         $this->assertIsString($content->data[0]->phonenumbers[0]->phonenumber);
+
+        // %FIXME: need an explicit test for this that adds a number with "+", etc
+        $this->assertMatchesRegularExpression('/^\d+$/', $content->data[0]->phonenumbers[0]->phonenumber);
 
         $response->assertStatus(200);
     }
@@ -93,6 +95,7 @@ class ContactsApiTest extends TestCase
     }
 
     /**
+     * @group OFF-here1214
      * @group regression
      * @group api
      * @group contacts
@@ -103,20 +106,39 @@ class ContactsApiTest extends TestCase
 
         // --- By first name ---
 
-        $qStr = Str::of($contactToQuery->firstname)->substr(0, 2);
-        $params = [ 'by' => 'name', 'q' => $qStr ];
+        $qStr = (string)Str::of($contactToQuery->firstname)->substr(0, 2);
+        //$params = [ 'by' => 'name', 'q' => $qStr ];
+        $params = [ 'q' => $qStr ];
         $response = $this->ajaxJSON('GET', route('contacts.index', $params));
         $response->assertStatus(200);
+
+        $content = json_decode($response->content());
+        //dd($content, $qStr);
+
+        $num = collect($content->data)->reduce( function($acc, $c) use($qStr) {
+            $isMatch = preg_match('/^'.$qStr.'/', $c->firstname );
+            return $isMatch ? $acc : ($acc+1);
+        }, 0);
+        $this->assertEquals(0, $num, 'Found (first) name in results that does not match query string : '.$qStr);
 
         // --- By last name ---
 
-        $qStr = Str::of($contactToQuery->lastname)->substr(0, 2);
-        $params = [ 'by' => 'name', 'q' => $qStr ];
+        $qStr = (string)Str::of($contactToQuery->lastname)->substr(0, 2);
+        $params = [ 'q' => $qStr ];
         $response = $this->ajaxJSON('GET', route('contacts.index', $params));
         $response->assertStatus(200);
+
+        $content = json_decode($response->content());
+
+        $numFailed = collect($content->data)->reduce( function($acc, $c) use($qStr) {
+            $isMatch = preg_match('/^'.$qStr.'/', $c->lastname );
+            return $isMatch ? $acc : ($acc+1); // count number of failed matches
+        }, 0);
+        $this->assertEquals(0, $numFailed, 'Found (last) name in results that does not match query string : '.$qStr);
     }
 
     /**
+     * @group here1214
      * @group regression
      * @group api
      * @group contacts
@@ -128,14 +150,29 @@ class ContactsApiTest extends TestCase
 
         // --- From first digit ---
 
-        $qStr = Str::of($contactToQuery->phonenumbers[0]->phonenumber)->substr(0, 2);
-        $params = [ 'by' => 'number', 'q' => $qStr ];
+        $qStr = (string)Str::of($contactToQuery->phonenumbers[0]->phonenumber)->substr(0, 2);
+        $params = [ 'q' => $qStr ];
         $response = $this->ajaxJSON('GET', route('contacts.index', $params));
         $response->assertStatus(200);
 
+        $content = json_decode($response->content());
+
+        $numFailed = collect($content->data)->reduce( function($acc, $c) use($qStr) {
+            $foundAtLeastOnePhoneMatchForGivenContact = false;
+            foreach ($c->phonenumbers as $pn) {
+                $isMatch = preg_match('/'.$qStr.'/', $pn->phonenumber );
+                if ( $isMatch ) {
+                    $foundAtLeastOnePhoneMatchForGivenContact = true;
+                    break;
+                }
+            }
+            return $foundAtLeastOnePhoneMatchForGivenContact ? $acc : ($acc+1);
+        }, 0);
+        $this->assertEquals(0, $numFailed, 'Found phone number in results that does not match query string : '.$qStr);
+
         // --- From mid-digit ---
 
-        $qStr = Str::of($contactToQuery->phonenumbers[0]->phonenumber)->substr(3, 3);
+        $qStr = (string)Str::of($contactToQuery->phonenumbers[0]->phonenumber)->substr(3, 3);
         $params = [ 'by' => 'number', 'q' => $qStr ];
         $response = $this->ajaxJSON('GET', route('contacts.index', $params));
         $response->assertStatus(200);

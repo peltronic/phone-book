@@ -1,8 +1,12 @@
 <template>
   <div>
+
     <h1>Hello World App!</h1>
-    <CreateContactForm />
+
+    <CreateContactForm class="OFF-mb-5" />
+
     <ListContacts />
+
   </div>
 </template>
 

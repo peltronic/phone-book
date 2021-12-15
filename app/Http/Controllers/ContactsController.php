@@ -14,29 +14,39 @@ class ContactsController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            'by' => 'string|in:name,number', // search by contact name and/or phone number
+            //'by' => 'string|in:name,number', // search by contact name and/or phone number
             'q' => 'string', // value to search for
         ]);
 
         $query = Contact::query();
 
         // %FIXME: move to scope
-        if ( $request->has('by') && $request->has('q') && $request->q!=='' ) {
+        if ( $request->has('q') && $request->q!=='' ) {
             $qStr = $request->q;
+            $query->whereHas('phonenumbers', function($q1) use($qStr) {
+                $q1->where('phonenumber', 'LIKE', '%'.$qStr.'%');
+            });
+            $query->orWhere( function($q1) use($qStr) {
+                $q1->where('firstname', 'LIKE', $qStr.'%')->orWhere('lastname', 'LIKE', $qStr.'%');
+            });
+            /*
             switch ( $request->by ) {
                 case 'name':
+                    //$query->where('firstname', 'LIKE', $qStr.'%');
                     $query->where('firstname', 'LIKE', $qStr.'%')->orWhere('lastname', 'LIKE', $qStr.'%');
                     break;
                 case 'number':
-                    // %NOTE [] %TODO: needs to ignore '+', etc
-                    $query->whereHas('phonenumbers', function($q1) {
+                    $query->whereHas('phonenumbers', function($q1) use($qStr) {
+                        //$q1->where('phonenumber', 'LIKE', $qStr.'%');
                         $q1->where('phonenumber', 'LIKE', '%'.$qStr.'%');
                     });
                     break;
             }
+            */
         }
 
-        $list = $query->get();
+        $list = $query->orderBy('created_at', 'desc')->get();
+        //dd('controller', $list->toArray(), $qStr);
 
         return new ContactCollection($list);
     }
